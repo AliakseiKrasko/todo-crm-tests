@@ -10,13 +10,11 @@
     "strict": true,
     "jsx": "react-jsx",
     "types": [
-      "cypress"
+      "jest",
+      "@testing-library/jest-dom",
+      "node"
     ]
   },
-  "include": [
-    "src",
-    "cypress/**/*.ts",
-    "cypress/**/*.js"
-  ],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
