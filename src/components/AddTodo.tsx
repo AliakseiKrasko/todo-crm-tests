@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { useAppDispatch } from "../store/hooks";
-import { addTodo } from "../store/todoSlice";
+import { todosApi } from "../store/todosApi";
 
 export default function AddTodo() {
     const [value, setValue] = useState("");
-    const dispatch = useAppDispatch();
+    const [addTodo, { isLoading }] = todosApi.useAddTodoMutation();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!value.trim()) return;
-        dispatch(addTodo(value));
+        addTodo(value);
         setValue("");
     };
 
@@ -24,8 +23,9 @@ export default function AddTodo() {
             <button
                 type="submit"
                 className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition"
+                disabled={isLoading}
             >
-                Добавить
+                {isLoading ? "Добавление..." : "Добавить"}
             </button>
         </form>
     );

@@ -1,10 +1,12 @@
-import { configureStore } from '@reduxjs/toolkit';
-import todoReducer from './todoSlice';
+import {configureStore} from '@reduxjs/toolkit';
+import {todosApi} from "./todosApi";
 
 export const store = configureStore({
     reducer: {
-        todos: todoReducer,
+        [todosApi.reducerPath]: todosApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(todosApi.middleware),
 });
 
 // Типы для использования в хуках

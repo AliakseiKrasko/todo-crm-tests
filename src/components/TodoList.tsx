@@ -1,14 +1,21 @@
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { toggleTodo, removeTodo } from "../store/todoSlice";
+import {todosApi} from "../store/todosApi";
+
 
 type Props = { onlyCompleted?: boolean };
 
-export default function TodoList( { onlyCompleted }: Props) {
-    const todos = useAppSelector(state => state.todos.items);
-    const dispatch = useAppDispatch();
-    const visible = onlyCompleted ? todos.filter(t => t.completed) : todos;
+export default function TodoList({ onlyCompleted }: Props) {
+    const {data: todos = [], isLoading} = todosApi.useGetTodosQuery();
+    const [toggleTodo] = todosApi.useToggleTodoMutation();
+    const [removeTodo] = todosApi.useRemoveTodoMutation();
+
+    if (isLoading) return <div>Загрузка...</div>;
+
+    const visible = onlyCompleted
+        ? todos.filter(t => t.completed)
+        : todos;
 
     if (!visible.length) return <div className="text-gray-500">Задач нет</div>;
+
 
     return (
         <ul className="space-y-2">
@@ -19,13 +26,13 @@ export default function TodoList( { onlyCompleted }: Props) {
                 >
           <span
               className={`flex-1 cursor-pointer ${todo.completed ? "line-through text-gray-400" : ""}`}
-              onClick={() => dispatch(toggleTodo(todo.id))}
+              onClick={() => toggleTodo(todo.id)}
           >
             {todo.text}
           </span>
                     <button
                         className="ml-4 text-red-500 hover:text-red-700"
-                        onClick={() => dispatch(removeTodo(todo.id))}
+                        onClick={() => removeTodo(todo.id)}
                     >
                         Удалить
                     </button>
