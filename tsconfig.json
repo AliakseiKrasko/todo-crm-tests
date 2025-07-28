@@ -8,8 +8,15 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": [
+      "cypress"
+    ]
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "cypress/**/*.ts",
+    "cypress/**/*.js"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
