@@ -172,3 +172,40 @@ test("фильтрует только завершённые задачи при
     expect(screen.queryByText("Task 1")).not.toBeInTheDocument();
     expect(screen.getByText("Task 2")).toBeInTheDocument();
 });
+
+test("показывает индикатор загрузки", () => {
+    jest.spyOn(TodosApiModule.todosApi, "useGetTodosQuery").mockImplementation(() => ({
+        data: [],
+        isLoading: true,
+        isError: false,
+        error: undefined,
+        isSuccess: false,
+        refetch: jest.fn(),
+    }));
+
+    render(
+        <Provider store={store}>
+            <TodoList />
+        </Provider>
+    );
+    expect(screen.getByText(/loading|загрузка/i)).toBeInTheDocument();
+});
+
+
+test("показывает сообщение опри пустом списке задач", () => {
+    jest.spyOn(TodosApiModule.todosApi, "useGetTodosQuery").mockImplementation(() => ({
+        data: [],
+        isLoading: false,
+        isError: false,
+        error: undefined,
+        isSuccess: true,
+        refetch: jest.fn(),
+    }))
+
+    render(
+        <Provider store={store}>
+            <TodoList />
+        </Provider>
+    )
+    expect(screen.getByText(/задач нет|нет задач/i)).toBeInTheDocument();
+})
