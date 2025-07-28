@@ -4,6 +4,7 @@ import TodoList from "../components/TodoList";
 import { Provider } from "react-redux";
 import { store } from "../store/store";
 import * as TodosApiModule from "../store/todosApi";
+import AddTodo from "../components/AddTodo";
 
 jest.spyOn(TodosApiModule.todosApi, "useGetTodosQuery").mockImplementation(() => ({
     data: [
@@ -109,4 +110,65 @@ describe("TodoList (интерактив)", () => {
         await userEvent.click(deleteButton);
         expect(removeMock).toHaveBeenCalledWith("1");
     });
+});
+
+
+describe("AddTodo", () => {
+    const addMock = jest.fn();
+
+    beforeEach(() => {
+        jest.spyOn(TodosApiModule.todosApi, "useAddTodoMutation").mockImplementation(() => [
+            addMock,
+            {
+                reset: jest.fn(),
+                originalArgs: undefined,
+                isLoading: false,
+                isSuccess: false,
+                isError: false,
+                error: undefined,
+                data: undefined
+            }
+        ]);
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test("вызывает addTodo при добавлении задачи", async () => {
+        render(
+            <Provider store={store}>
+                <AddTodo />
+            </Provider>
+        );
+        // Введём текст
+        await userEvent.type(screen.getByPlaceholderText("Введите задачу"), "Новое дело");
+        // Кликнем по кнопке (или submit формы, в зависимости от реализации)
+        await userEvent.click(screen.getByText("Добавить"));
+
+        expect(addMock).toHaveBeenCalledWith("Новое дело");
+    });
+});
+
+test("фильтрует только завершённые задачи при onlyCompleted", () => {
+    // Верни из мока список с завершёнными и незавершёнными
+    jest.spyOn(TodosApiModule.todosApi, "useGetTodosQuery").mockImplementation(() => ({
+        data: [
+            { id: "1", text: "Task 1", completed: false },
+            { id: "2", text: "Task 2", completed: true },
+        ],
+        isLoading: false,
+        isError: false,
+        error: undefined,
+        isSuccess: true,
+        refetch: jest.fn(),
+    }));
+
+    render(
+        <Provider store={store}>
+            <TodoList onlyCompleted />
+        </Provider>
+    );
+    expect(screen.queryByText("Task 1")).not.toBeInTheDocument();
+    expect(screen.getByText("Task 2")).toBeInTheDocument();
 });
