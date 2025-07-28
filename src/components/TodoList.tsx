@@ -1,15 +1,18 @@
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { toggleTodo, removeTodo } from "../store/todoSlice";
 
-export default function TodoList() {
+type Props = { onlyCompleted?: boolean };
+
+export default function TodoList( { onlyCompleted }: Props) {
     const todos = useAppSelector(state => state.todos.items);
     const dispatch = useAppDispatch();
+    const visible = onlyCompleted ? todos.filter(t => t.completed) : todos;
 
-    if (!todos.length) return <div className="text-gray-500">Задач нет</div>;
+    if (!visible.length) return <div className="text-gray-500">Задач нет</div>;
 
     return (
         <ul className="space-y-2">
-            {todos.map(todo => (
+            {visible.map(todo => (
                 <li
                     key={todo.id}
                     className="flex items-center justify-between bg-white rounded shadow p-2"
