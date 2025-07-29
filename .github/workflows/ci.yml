@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Клонируем репозиторий
+        uses: actions/checkout@v4
+
+      - name: Устанавливаем Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.15.0
+
+      - name: Устанавливаем зависимости
+        run: npm ci
+
+      - name: Запуск unit-тестов (Jest + RTL)
+        run: npm test
+
+      - name: Сборка приложения
+        run: npm run build
+
+      - name: Запуск Cypress (e2e)
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run dev -- --host=0.0.0.0
+          wait-on: 'http://localhost:5173'
