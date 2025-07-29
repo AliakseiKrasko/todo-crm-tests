@@ -33,3 +33,14 @@ jobs:
         with:
           start: npm run dev -- --host=0.0.0.0
           wait-on: 'http://localhost:5173'
+
+
+      # ---- STEP ДЛЯ ДЕПЛОЯ НА VERCEL ----
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          prod: true   # делаем деплой на production
